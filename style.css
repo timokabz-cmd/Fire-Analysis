@@ -1,0 +1,1160 @@
+/* ==========================================================================
+   FIRE — Betting Tips Service
+   Design: charcoal + ember, "betting-ticket" signature card component
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root {
+  /* Palette */
+  --bg: #100D0B;
+  --bg-alt: #17130F;
+  --surface: #1E1712;
+  --surface-2: #251C15;
+  --line: rgba(245, 239, 230, 0.09);
+  --line-strong: rgba(245, 239, 230, 0.18);
+
+  --ember: #FF5A1F;
+  --ember-deep: #D62828;
+  --gold: #FFB627;
+  --gold-soft: #FFD98A;
+  --bone: #F5EFE6;
+  --muted: #B7AB9B;
+  --muted-2: #8A7E70;
+
+  --win: #37B24D;
+  --loss: #E8484B;
+  --pending: #FFB627;
+
+  --flame-gradient: linear-gradient(135deg, var(--ember-deep) 0%, var(--ember) 55%, var(--gold) 100%);
+
+  --font-display: 'Anton', 'Arial Narrow', sans-serif;
+  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --container: 1200px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--bone);
+  font-family: var(--font-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; margin: 0; padding: 0; }
+button { font-family: inherit; cursor: pointer; }
+
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------
+   Eyebrow / section heads
+   -------------------------------------------------------------------- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin: 0 0 14px;
+}
+.eyebrow::before {
+  content: '';
+  width: 18px;
+  height: 2px;
+  background: var(--flame-gradient);
+  display: inline-block;
+}
+
+.section-head {
+  max-width: 640px;
+  margin-bottom: 40px;
+}
+.section-head h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  font-size: clamp(28px, 4vw, 44px);
+  margin: 0 0 12px;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.section-head p {
+  color: var(--muted);
+  font-size: 16px;
+  margin: 0;
+}
+
+section { position: relative; padding: 88px 0; }
+section.alt { background: var(--bg-alt); }
+
+/* --------------------------------------------------------------------
+   Top bar / Nav
+   -------------------------------------------------------------------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(16, 13, 11, 0.86);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 76px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+.brand small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--muted-2);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.nav-links a {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color .15s ease;
+  position: relative;
+}
+.nav-links a:hover { color: var(--bone); }
+
+.nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 14px;
+  border: 1px solid transparent;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-flame {
+  background: var(--flame-gradient);
+  color: #17100A;
+  box-shadow: 0 8px 24px -8px rgba(255, 90, 31, 0.65);
+}
+.btn-flame:hover { box-shadow: 0 10px 30px -6px rgba(255, 90, 31, 0.8); }
+
+.btn-whatsapp {
+  background: #20BD5A;
+  color: #06210F;
+  box-shadow: 0 8px 20px -8px rgba(32, 189, 90, 0.6);
+}
+.btn-whatsapp:hover { box-shadow: 0 10px 26px -6px rgba(32, 189, 90, 0.75); }
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--bone);
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+.btn-block { width: 100%; }
+.btn-sm { padding: 9px 16px; font-size: 13px; }
+
+.icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  color: var(--bone);
+}
+
+/* --------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  padding: 90px 0 70px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(180deg, rgba(16,13,11,0.55) 0%, rgba(16,13,11,0.88) 55%, var(--bg) 100%),
+    url('https://images.unsplash.com/photo-1549333580-4cb2c5c8e421?fm=jpg&q=80&w=1800&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center 30%;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(60% 50% at 15% 0%, rgba(255, 90, 31, 0.25), transparent 60%);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 50px;
+  align-items: center;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 74px);
+  line-height: 0.98;
+  text-transform: uppercase;
+  margin: 0 0 22px;
+  letter-spacing: 0.01em;
+}
+.hero h1 .flame-text {
+  background: var(--flame-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero p.lead {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0 0 32px;
+}
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 44px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 32px;
+}
+.stat-row .stat b {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 26px;
+  color: var(--gold);
+}
+.stat-row .stat span {
+  font-size: 12px;
+  color: var(--muted-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Floating hero ticket preview */
+.hero-visual { position: relative; }
+.floating-ticket {
+  transform: rotate(-3deg);
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+  animation: float 5s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: rotate(-3deg) translateY(0); }
+  50% { transform: rotate(-1deg) translateY(-14px); }
+}
+
+/* --------------------------------------------------------------------
+   Results ticker
+   -------------------------------------------------------------------- */
+.ticker-wrap {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  overflow: hidden;
+  padding: 14px 0;
+}
+.ticker-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  padding: 0 24px;
+  white-space: nowrap;
+}
+.ticker-track {
+  display: flex;
+  gap: 40px;
+  white-space: nowrap;
+  animation: ticker 32s linear infinite;
+  width: max-content;
+}
+.ticker-wrap:hover .ticker-track { animation-play-state: paused; }
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+}
+.ticker-item b { color: var(--bone); font-weight: 700; }
+.tick-won { color: var(--win); font-weight: 700; }
+.tick-lost { color: var(--loss); font-weight: 700; }
+
+/* --------------------------------------------------------------------
+   Ticket card (signature component)
+   -------------------------------------------------------------------- */
+.ticket {
+  --notch-bg: var(--bg);
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 22px 22px 18px;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform .18s ease, border-color .18s ease;
+}
+section.alt .ticket { --notch-bg: var(--bg-alt); }
+.ticket:hover { transform: translateY(-4px); border-color: rgba(255,90,31,0.4); }
+
+.ticket-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+.league-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gold-soft);
+  font-weight: 700;
+}
+
+.ticket-match {
+  font-family: var(--font-display);
+  font-size: 22px;
+  text-transform: uppercase;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+.ticket-match .vs {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted-2);
+  margin: 0 6px;
+  text-transform: none;
+}
+
+.ticket-divider {
+  position: relative;
+  height: 1px;
+  background-image: linear-gradient(90deg, var(--line-strong) 60%, transparent 0%);
+  background-size: 12px 1px;
+  background-repeat: repeat-x;
+  margin: 0 -22px;
+}
+.ticket-divider .notch {
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  background: var(--notch-bg);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  border: 1px solid var(--line-strong);
+}
+.ticket-divider .notch.left { left: -10px; border-right: none; }
+.ticket-divider .notch.right { right: -10px; border-left: none; }
+
+.ticket-pick {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pick-info { display: flex; flex-direction: column; gap: 2px; }
+.pick-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+.pick-value {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--bone);
+}
+.odds-badge {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  color: var(--gold);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.ticket-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.flames { font-size: 13px; letter-spacing: 1px; }
+.flames .dim { opacity: 0.25; }
+
+.status {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+.status.pending { color: var(--pending); background: rgba(255, 182, 39, 0.12); }
+.status.won { color: var(--win); background: rgba(55, 178, 77, 0.14); }
+.status.lost { color: var(--loss); background: rgba(232, 72, 75, 0.14); }
+.status.live {
+  color: #fff;
+  background: var(--ember-deep);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.status.live::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+.tip-cta {
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Grid layouts */
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.tips-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Featured single ticket (Tip of the Day / Banker) */
+.featured-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+.featured-ticket { max-width: 460px; }
+.featured-ticket .ticket-match { font-size: 30px; }
+.featured-ticket .odds-badge { font-size: 24px; padding: 10px 18px; }
+
+.feature-copy .eyebrow { margin-bottom: 10px; }
+.feature-copy h2 {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4vw, 46px);
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin: 0 0 16px;
+}
+.feature-copy p { color: var(--muted); margin: 0 0 24px; max-width: 460px; }
+.feature-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--bone);
+}
+.feature-list li svg { color: var(--ember); flex-shrink: 0; width: 18px; height: 18px; }
+
+/* Countdown */
+.countdown {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.countdown div {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  text-align: center;
+  min-width: 64px;
+}
+.countdown b {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--gold);
+}
+.countdown span { font-size: 10px; text-transform: uppercase; color: var(--muted-2); letter-spacing: 0.08em; }
+
+/* Weekly form strip (banker section) */
+.form-strip { display: flex; gap: 6px; margin-top: 4px; }
+.form-strip span {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+}
+.form-strip .w { background: rgba(55,178,77,0.16); color: var(--win); }
+.form-strip .l { background: rgba(232,72,75,0.16); color: var(--loss); }
+
+/* --------------------------------------------------------------------
+   Basketball section (image split)
+   -------------------------------------------------------------------- */
+.split-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: end;
+  margin-bottom: 40px;
+}
+.split-head img {
+  border-radius: var(--radius);
+  height: 220px;
+  width: 100%;
+  object-fit: cover;
+  border: 1px solid var(--line-strong);
+}
+
+/* --------------------------------------------------------------------
+   Overs market — probability meter
+   -------------------------------------------------------------------- */
+.meter {
+  height: 8px;
+  border-radius: 100px;
+  background: var(--surface-2);
+  overflow: hidden;
+  margin-top: 10px;
+}
+.meter > span {
+  display: block;
+  height: 100%;
+  background: var(--flame-gradient);
+  border-radius: 100px;
+}
+.meter-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted-2);
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --------------------------------------------------------------------
+   Live section
+   -------------------------------------------------------------------- */
+.live-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+.live-dot {
+  width: 10px; height: 10px;
+  background: var(--ember-deep);
+  border-radius: 50%;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------
+   Why-choose feature cards
+   -------------------------------------------------------------------- */
+.feature-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px 22px;
+}
+.feature-card .fc-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--flame-gradient);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+  color: #17100A;
+}
+.feature-card h3 { font-size: 17px; margin: 0 0 8px; }
+.feature-card p { font-size: 14px; color: var(--muted); margin: 0; }
+
+/* --------------------------------------------------------------------
+   Pricing / VIP
+   -------------------------------------------------------------------- */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.price-card {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 30px 26px;
+  display: flex;
+  flex-direction: column;
+}
+.price-card.highlight {
+  border-color: var(--ember);
+  background: linear-gradient(180deg, rgba(255,90,31,0.09), var(--surface) 40%);
+  position: relative;
+}
+.price-card.highlight::before {
+  content: 'MOST POPULAR';
+  position: absolute;
+  top: -12px; left: 26px;
+  background: var(--flame-gradient);
+  color: #17100A;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 5px 12px;
+  border-radius: 100px;
+}
+.price-card h3 { font-size: 18px; margin: 0 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+.price-card .price {
+  font-family: var(--font-mono);
+  font-size: 34px;
+  color: var(--gold);
+  margin: 6px 0 20px;
+}
+.price-card .price span { font-size: 13px; color: var(--muted-2); font-weight: 500; }
+.price-card ul { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; flex: 1; }
+.price-card li { display: flex; gap: 8px; font-size: 14px; color: var(--muted); }
+.price-card li svg { width: 16px; height: 16px; color: var(--ember); flex-shrink: 0; margin-top: 2px; }
+
+/* --------------------------------------------------------------------
+   Testimonials
+   -------------------------------------------------------------------- */
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.testimonial {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px;
+}
+.testimonial .stars { color: var(--gold); font-size: 13px; margin-bottom: 12px; letter-spacing: 2px; }
+.testimonial p { font-size: 14px; color: var(--bone); margin: 0 0 18px; }
+.testimonial-author { display: flex; align-items: center; gap: 10px; }
+.avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--flame-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #17100A;
+  font-size: 14px;
+}
+.testimonial-author b { display: block; font-size: 13px; }
+.testimonial-author span { font-size: 12px; color: var(--muted-2); }
+
+/* --------------------------------------------------------------------
+   FAQ
+   -------------------------------------------------------------------- */
+.faq-list { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  color: var(--bone);
+  padding: 18px 22px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+}
+.faq-q svg { transition: transform .2s ease; color: var(--ember); flex-shrink: 0; }
+.faq-item.open .faq-q svg { transform: rotate(45deg); }
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease, padding .25s ease;
+  padding: 0 22px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.faq-item.open .faq-a { max-height: 240px; padding: 0 22px 20px; }
+
+/* --------------------------------------------------------------------
+   VIP / WhatsApp banner
+   -------------------------------------------------------------------- */
+.cta-banner {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 60px 50px;
+  isolation: isolate;
+  text-align: center;
+}
+.cta-banner::before {
+  content: '';
+  position: absolute; inset: 0; z-index: -2;
+  background-image:
+    linear-gradient(180deg, rgba(16,13,11,0.35), rgba(16,13,11,0.92)),
+    url('https://images.unsplash.com/photo-1766756467595-fd3f1f62d562?fm=jpg&q=80&w=1800&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+}
+.cta-banner h2 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  text-transform: uppercase;
+  margin: 0 0 14px;
+}
+.cta-banner p { color: var(--muted); max-width: 520px; margin: 0 auto 28px; }
+.cta-banner .btn-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* --------------------------------------------------------------------
+   Responsible gambling note
+   -------------------------------------------------------------------- */
+.rg-notice {
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 18px 22px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: var(--muted);
+}
+.rg-notice svg { color: var(--gold); flex-shrink: 0; margin-top: 2px; }
+.rg-notice b { color: var(--bone); }
+
+/* --------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------- */
+footer {
+  background: var(--bg-alt);
+  border-top: 1px solid var(--line);
+  padding: 60px 0 30px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.footer-brand p { color: var(--muted-2); font-size: 13px; margin: 14px 0 18px; max-width: 280px; }
+.footer-social { display: flex; gap: 10px; }
+.footer-social a {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted);
+  transition: color .15s ease, border-color .15s ease;
+}
+.footer-social a:hover { color: var(--ember); border-color: var(--ember); }
+.footer-col h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-2);
+  margin: 0 0 16px;
+}
+.footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+.footer-col a { font-size: 14px; color: var(--muted); }
+.footer-col a:hover { color: var(--bone); }
+.footer-bottom {
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+/* --------------------------------------------------------------------
+   WhatsApp floating button
+   -------------------------------------------------------------------- */
+.whatsapp-float {
+  position: fixed;
+  bottom: 26px;
+  right: 26px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #20BD5A;
+  color: #06210F;
+  padding: 14px 18px 14px 14px;
+  border-radius: 100px;
+  box-shadow: 0 12px 30px -8px rgba(32, 189, 90, 0.65);
+  font-weight: 700;
+  font-size: 14px;
+}
+.whatsapp-float .wa-icon-wrap {
+  width: 30px; height: 30px;
+  background: rgba(6,33,15,0.14);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.whatsapp-float .wa-icon-wrap svg { width: 18px; height: 18px; }
+.whatsapp-float::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 100px;
+  border: 2px solid #20BD5A;
+  opacity: 0.5;
+  animation: wa-pulse 2.2s ease-out infinite;
+}
+@keyframes wa-pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+.whatsapp-float span.wa-label { white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .whatsapp-float span.wa-label { display: none; }
+  .whatsapp-float { padding: 12px; }
+}
+
+/* --------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------- */
+@media (max-width: 1080px) {
+  .tips-grid { grid-template-columns: repeat(2, 1fr); }
+  .tips-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+  .feature-cards { grid-template-columns: repeat(2, 1fr); }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .testimonial-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 860px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-visual { order: -1; max-width: 340px; }
+  .featured-wrap { grid-template-columns: 1fr; }
+  .featured-wrap .featured-ticket { order: -1; margin: 0 auto; }
+  .split-head { grid-template-columns: 1fr; }
+  .stat-row { grid-template-columns: repeat(2, auto); row-gap: 20px; }
+}
+
+@media (max-width: 760px) {
+  .nav-links { display: none; }
+  .nav-toggle { display: flex; }
+  section { padding: 64px 0; }
+  .tips-grid, .tips-grid.cols-4 { grid-template-columns: 1fr; }
+  .feature-cards { grid-template-columns: 1fr; }
+  .btn-ghost.nav-cta-desktop { display: none; }
+}
+
+/* --------------------------------------------------------------------
+   Payment method modal
+   -------------------------------------------------------------------- */
+.pay-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 6, 5, 0.72);
+  backdrop-filter: blur(3px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.pay-modal-overlay.is-open { display: flex; }
+
+.pay-modal {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 32px 24px 24px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+}
+
+.pay-modal h3 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 24px;
+  margin: 8px 0 4px;
+  line-height: 1.1;
+}
+
+.pay-modal-amount {
+  font-family: var(--font-mono);
+  color: var(--gold);
+  font-size: 18px;
+  margin: 0 0 20px;
+}
+
+.pay-modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pay-modal-note {
+  margin: 16px 0 0;
+  font-size: 12px;
+  color: var(--muted-2);
+  text-align: center;
+}
+
+.pay-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 4px;
+  line-height: 0;
+}
+.pay-modal-close:hover { color: var(--bone); }
+
+/* --------------------------------------------------------------------
+   Card entry screen (demo checkout preview)
+   -------------------------------------------------------------------- */
+.pay-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: 12px;
+}
+.pay-back-btn:hover { color: var(--bone); }
+
+.card-preview {
+  background: linear-gradient(135deg, #2A2019 0%, #1A130E 100%);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  margin: 16px 0 20px;
+  position: relative;
+  overflow: hidden;
+}
+.card-preview::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 180px;
+  height: 180px;
+  background: var(--flame-gradient);
+  opacity: 0.12;
+  border-radius: 50%;
+}
+
+.card-preview-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.card-chip {
+  width: 34px;
+  height: 24px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+  display: inline-block;
+}
+.card-brand-logo {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.card-brand-logo.visa { color: #F5F5F5; }
+.card-brand-logo.visa::before { content: "VISA"; font-style: italic; font-weight: 700; }
+.card-brand-logo.mastercard { color: transparent; }
+.card-brand-logo.mastercard::before {
+  content: "";
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  background:
+    radial-gradient(circle at 12px 10px, #EB001B 10px, transparent 10.5px),
+    radial-gradient(circle at 22px 10px, #F79E1B 10px, transparent 10.5px);
+}
+
+.card-preview-number {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  letter-spacing: 2px;
+  color: var(--bone);
+  margin-bottom: 20px;
+}
+
+.card-preview-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.card-preview-label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted-2);
+  margin-bottom: 3px;
+}
+.card-preview-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--bone);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.card-form { display: flex; flex-direction: column; gap: 14px; }
+.card-field { display: flex; flex-direction: column; gap: 6px; }
+.card-field span {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.card-field input {
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  color: var(--bone);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  width: 100%;
+}
+.card-field input:focus {
+  outline: none;
+  border-color: var(--ember);
+}
+.card-field-row { display: flex; gap: 12px; }
+.card-field-row .card-field { flex: 1; }
+
+.demo-note { margin-top: 16px; }
+
+.done-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(55, 178, 77, 0.15);
+  color: var(--win);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+#payScreenDone { text-align: center; }
+#payScreenDone h3 { font-family: var(--font-display); text-transform: uppercase; font-size: 22px; margin: 0; }
